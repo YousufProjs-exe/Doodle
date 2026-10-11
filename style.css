@@ -1,6 +1,7 @@
 
 * {
     box-sizing: border-box;
+    /* cursor: cell; */
 }
 
 :root {
@@ -193,7 +194,7 @@ input[type="range"] {
 #rectangle,
 #circle,
 #arrow,
-text {
+#text {
     min-height: 44px;
     padding: 11px 14px;
     text-align: left;
@@ -205,7 +206,7 @@ text {
 #rectangle.active,
 #circle.active,
 #arrow.active,
-text.active {
+#text.active {
     color: #b94730;
     background: #fff0e9;
     border-color: #ff9e86;
