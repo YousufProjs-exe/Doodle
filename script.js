@@ -5,7 +5,11 @@ const colorInput = document.getElementById("color");
 const sizeInput = document.getElementById("size");
 const brushButton = document.getElementById("brush");
 const eraserButton = document.getElementById("eraser");
+const undoButton = document.getElementById("undo");
+const redoButton = document.getElementById("redo");
 
+let history = [];
+let historyIndex = -1;
 let drawing = false;
 let tool = "brush";
 let lastPoint = null;
@@ -69,6 +73,46 @@ function startDrawing(event) {
     ctx.fill();
 }
 
+function updateHistoryButtons() {
+    if (undoButton) undoButton.disabled = historyIndex <= 0;
+    if (redoButton) redoButton.disabled = historyIndex >= history.length - 1;
+}
+
+function saveHistory() {
+    const snapshot = document.createElement("canvas");
+    snapshot.width = canvas.width;
+    snapshot.height = canvas.height;
+    snapshot.getContext("2d").drawImage(canvas, 0, 0);
+
+    history = history.slice(0, historyIndex + 1);
+    history.push(snapshot);
+
+    if (history.length > 50) history.shift();
+
+    historyIndex = history.length - 1;
+    updateHistoryButtons();
+}
+
+function resetHistory() {
+    history = [];
+    historyIndex = -1;
+    saveHistory();
+}
+
+function restoreHistory(index) {
+    if (index < 0 || index >= history.length) return;
+
+    historyIndex = index;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(history[index], 0, 0);
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    updateHistoryButtons();
+}
+
 function draw(event) {
     if (!drawing || !lastPoint) return;
 
@@ -87,9 +131,13 @@ function draw(event) {
 }
 
 function stopDrawing() {
+    if (!drawing) return;
+
     drawing = false;
     lastPoint = null;
     ctx.beginPath();
+    console.log("Stroke finished. History before save:", history.length);
+    saveHistory();
 }
 
 function selectTool(selectedTool) {
@@ -107,7 +155,20 @@ canvas.addEventListener("pointerup", stopDrawing);
 canvas.addEventListener("pointercancel", stopDrawing);
 canvas.addEventListener("lostpointercapture", stopDrawing);
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => {
+    resizeCanvas();
+    resetHistory();
+});
+
+undoButton?.addEventListener("click", () => {
+    console.log("Undo clicked:", historyIndex, history.length);
+    restoreHistory(historyIndex - 1);
+});
+
+redoButton?.addEventListener("click", () => {
+    restoreHistory(historyIndex + 1);
+});
 
 selectTool("brush");
 resizeCanvas();
+resetHistory();
