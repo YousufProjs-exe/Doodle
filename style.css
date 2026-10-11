@@ -5,8 +5,11 @@
 
 :root {
     font-family: Inter, system-ui, sans-serif;
-    color: #202020;
-    background: #f5f5f2;
+    color: #302c2a;
+    background: #f8f6f2;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -15,134 +18,247 @@ body {
 }
 
 header {
+    min-height: 76px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 5%;
+    gap: 20px;
+    padding: 16px 5%;
     background: #fff;
-    border-bottom: 1px solid #e5e5df;
+    border-bottom: 1px solid #eee8e2;
 }
 
 header h1 {
     margin: 0;
-    font-size: 28px;
+    font-size: 29px;
+    font-weight: 800;
     letter-spacing: -1.5px;
 }
 
 header h1 span {
-    color: #ff735c;
+    color: #ff765e;
 }
 
 nav {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 9px;
 }
 
 button {
-  padding: 10px 14px;
-  border: 1px solid #deded8;
-  border-radius: 8px;
-  background: #fff;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
+    min-height: 40px;
+    padding: 10px 14px;
+    border: 1px solid #e6ded7;
+    border-radius: 9px;
+    background: #fff;
+    color: #49413c;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
 
 button:hover {
-  border-color: #ff735c;
+    background: #f8f3ef;
+    border-color: #d4c3b7;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #ff765e;
+    outline-offset: 3px;
+}
+
+#brush,
+#eraser {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 14px;
+    text-align: left;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: #49413c;
+}
+
+#brush:hover,
+#eraser:hover {
+    background: #faf3ee;
+    border-color: #f0e2d8;
+}
+
+#brush.active,
+#eraser.active {
+    color: #b94730;
+    background: #ffede5;
+    border-color: #ffc0ad;
+    box-shadow: inset 3px 0 #ff765e;
+    font-weight: 700;
+}
+
+#undo,
+#redo,
+#clear {
+    background: #f3f0eb;
+    border-color: #e5ded5;
+    color: #5c554e;
+}
+
+#undo:hover,
+#redo:hover,
+#clear:hover {
+    background: #e9e3db;
+    border-color: #d5c9bd;
 }
 
 #export {
-  color: #fff;
-  background: #ff735c;
-  border-color: #ff735c;
+    min-height: 42px;
+    padding: 10px 18px;
+    color: #fff;
+    background: #ff7057;
+    border: 1px solid #ff7057;
+    border-radius: 9px;
+    box-shadow: 0 3px 0 #e7b5a5;
+    font-weight: 700;
+}
+
+#export:hover {
+    background: #ed5d45;
+    border-color: #ed5d45;
+    box-shadow: 0 3px 0 #dba08e;
+}
+
+#export:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #dba08e;
 }
 
 main {
-  display: grid;
-  grid-template-columns: 200px minmax(0, 1fr);
-  gap: 28px;
-  padding: 28px 5%;
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 26px;
+    padding: 28px 5%;
 }
 
 aside {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-self: start;
+    gap: 11px;
+    padding: 20px 16px;
+    background: #fff;
+    border: 1px solid #eee7e0;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px #49321a08;
 }
 
 aside h2 {
-  margin: 0 0 8px;
-  font-size: 17px;
+    margin: 0 0 9px;
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: -0.3px;
 }
 
 aside label {
-  margin-top: 10px;
-  font-size: 13px;
-  font-weight: 600;
+    margin-top: 10px;
+    color: #716860;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 input[type="color"] {
     width: 100%;
     height: 42px;
-    padding: 3px;
-    border: 1px solid #deded8;
-    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid #e5ddd5;
+    border-radius: 9px;
     background: #fff;
-    /* cursor:pointer; */
-    cursor: copy;
+    cursor: pointer;
 }
 
 input[type="range"] {
     width: 100%;
-    accent-color: #ff735c;
+    margin: 5px 0;
+    accent-color: #ff765e;
+    cursor: pointer;
 }
 
 #workspace {
-  min-width: 0;
-  height: calc(100dvh - 125px);
-  min-height: 300px;
-  padding: 12px;
-  background: #fffaf5;
-  border: 2px solid #ffc9b9;
-  border-radius: 20px;
-  box-shadow: 0 5px 0 #f3ded2;
-  overflow: hidden;
+    min-width: 0;
+    height: calc(100dvh - 132px);
+    min-height: 360px;
+    padding: 12px;
+    background: #fff9f4;
+    border: 2px solid #f3c8b8;
+    border-radius: 18px;
+    box-shadow: 0 4px 0 #efded3;
+    overflow: hidden;
 }
 
 canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: #fff;
-  border: 2px dashed #f2c6b8;
-  border-radius: 12px;
-  touch-action: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border: 1px dashed #e9c9bb;
+    border-radius: 10px;
+    touch-action: none;
 }
 
-/* Perfect for small vertical screens */
-@media (max-width: 650px) {
-    main {
-        gap: 20px;
-        grid-template-columns: 1fr;
-        padding: 20px 4%;
-    }
-
+@media (max-width: 760px) {
     header {
-        padding: 16px 4%;
-    }
-
-    body{
-        min-height: 100%;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        padding: 18px 4%;
     }
 
     nav {
-        gap: 5px;
+        width: 100%;
+        flex-wrap: wrap;
     }
 
-    button {
-        padding: 9px;
-        font-size: 12px;
+    nav button {
+        flex: 1;
+        padding-inline: 10px;
+    }
+
+    main {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 20px 4%;
+    }
+
+    aside {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    aside h2 {
+        grid-column: 1 / -1;
+    }
+
+    aside label {
+        align-self: center;
+    }
+
+    #workspace {
+        height: 60vh;
+        min-height: 300px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
     }
 }
