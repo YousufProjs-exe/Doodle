@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doodle - Be Creative</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>doodle<span>.</span></h1>
+        <nav>
+            <button class="undo">Undo</button>
+            <button class="redo">Redo</button>
+            <button class="clear">Clear</button>
+            <button class="export">Export PNG</button>
+        </nav>
+    </header>
+
+    <main>
+        <aside>
+            <h2>Tools</h2>
+            <button id="brush">Brush</button>
+            <button id="eraser">Eraser</button>
+
+            <label for="color">Color</label>
+            <input type="color" id="color" value="#202020">
+
+            <label for="size">Brush size</label>
+            <input type="range" id="size" min="1" max="40" value="5">
+        </aside>
+
+        <section id="workspace">
+            <canvas id="canvas" width="1000" height="650"></canvas>
+        </section>
+    </main>
+        
+</body>
+</html>
