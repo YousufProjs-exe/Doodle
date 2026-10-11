@@ -7,6 +7,8 @@ const brushButton = document.getElementById("brush");
 const eraserButton = document.getElementById("eraser");
 const undoButton = document.getElementById("undo");
 const redoButton = document.getElementById("redo");
+const clearButton = document.getElementById("clear");
+const exportButton = document.getElementById("export");
 
 let history = [];
 let historyIndex = -1;
@@ -167,6 +169,23 @@ undoButton?.addEventListener("click", () => {
 
 redoButton?.addEventListener("click", () => {
     restoreHistory(historyIndex + 1);
+});
+
+clearButton.addEventListener("click", () => {
+    drawing = false;
+    lastPoint = null;
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    saveHistory();
+});
+
+exportButton.addEventListener("click", () => {
+    const link = document.createElement("a");
+    link.download = "doodle.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
 });
 
 selectTool("brush");
