@@ -221,6 +221,7 @@ input[type="range"] {
     border-radius: 18px;
     box-shadow: 0 4px 0 #efded3;
     overflow: hidden;
+    position: relative;
 }
 
 canvas {

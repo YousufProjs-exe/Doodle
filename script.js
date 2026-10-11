@@ -13,6 +13,7 @@ const lineButton = document.getElementById("line");
 const rectangleButton = document.getElementById("rectangle");
 const circleButton = document.getElementById("circle");
 const arrowButton = document.getElementById("arrow");
+const textButton = document.getElementById("text");
 
 let history = [];
 let historyIndex = -1;
@@ -135,8 +136,62 @@ function drawShape(point) {
     ctx.stroke();
 }
 
+function placeTextInput(event) {
+    const point = getPoint(event);
+    const input = document.createElement("input");
+
+    input.type = "text";
+    input.placeholder = "Type here...";
+    input.className = "text-entry";
+    input.style.position = "absolute";
+    input.style.left = `${canvas.offsetLeft + point.x}px`;
+    input.style.top = `${canvas.offsetTop + point.y}px`;
+    input.style.zIndex = "1000";
+    input.style.minWidth = "160px";
+    input.style.background = "#ffffff";
+    input.style.border = "1px solid #555";
+    input.style.padding = "4px";
+    input.style.color = colorInput.value;
+    input.style.fontSize = `${Math.max(12, Number(sizeInput.value) * 2)}px`;
+
+    document.getElementById("workspace").appendChild(input);
+    input.focus();
+
+    let finished = false;
+
+    function finish(save) {
+        if (finished) return;
+        finished = true;
+
+        if (save && input.value.trim()) {
+            ctx.fillStyle = colorInput.value;
+            ctx.font = `${Math.max(12, Number(sizeInput.value) * 2)}px sans-serif`;
+            ctx.textBaseline = "top";
+            ctx.fillText(input.value, point.x, point.y);
+            saveHistory();
+        }
+
+        input.remove();
+    }
+
+    input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            finish(true);
+        }
+        if (event.key === "Escape") finish(false);
+    });
+
+    input.addEventListener("blur", () => finish(true));
+}
+
 function startDrawing(event) {
     if (event.button !== undefined && event.button !== 0) return;
+
+    if (tool === "text") {
+        placeTextInput(event);
+        return;
+    }
 
     drawing = true;
     lastPoint = getPoint(event);
@@ -249,7 +304,8 @@ function selectTool(selectedTool) {
         line: lineButton,
         rectangle: rectangleButton,
         circle: circleButton,
-        arrow: arrowButton
+        arrow: arrowButton,
+        text: textButton
     };
 
     Object.entries(buttons).forEach(([name, button]) => {
@@ -263,6 +319,7 @@ lineButton.addEventListener("click", () => selectTool("line"));
 rectangleButton.addEventListener("click", () => selectTool("rectangle"));
 circleButton.addEventListener("click", () => selectTool("circle"));
 arrowButton.addEventListener("click", () => selectTool("arrow"));
+textButton.addEventListener("click", () => selectTool("text"));
 
 canvas.addEventListener("pointerdown", startDrawing);
 canvas.addEventListener("pointermove", draw);
