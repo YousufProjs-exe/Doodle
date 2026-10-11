@@ -189,6 +189,28 @@ input[type="range"] {
     cursor: pointer;
 }
 
+#line,
+#rectangle,
+#circle,
+#arrow {
+    min-height: 44px;
+    padding: 11px 14px;
+    text-align: left;
+    background: #fff;
+    border-color: #e8e1da;
+}
+
+#line.active,
+#rectangle.active,
+#circle.active,
+#arrow.active {
+    color: #b94730;
+    background: #fff0e9;
+    border-color: #ff9e86;
+    box-shadow: inset 3px 0 #ff765e;
+    font-weight: 700;
+}
+
 #workspace {
     min-width: 0;
     height: calc(100dvh - 132px);

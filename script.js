@@ -9,6 +9,10 @@ const undoButton = document.getElementById("undo");
 const redoButton = document.getElementById("redo");
 const clearButton = document.getElementById("clear");
 const exportButton = document.getElementById("export");
+const lineButton = document.getElementById("line");
+const rectangleButton = document.getElementById("rectangle");
+const circleButton = document.getElementById("circle");
+const arrowButton = document.getElementById("arrow");
 
 let history = [];
 let historyIndex = -1;
@@ -17,6 +21,9 @@ let tool = "brush";
 let lastPoint = null;
 let canvasWidth = 1000;
 let canvasHeight = 650;
+let startPoint = null;
+let shapeSnapshot = null;
+const shapeTools = ["line", "rectangle", "circle", "arrow"];
 
 function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
@@ -62,11 +69,87 @@ function getPoint(event) {
     };
 }
 
+function restoreShapeSnapshot() {
+    if (!shapeSnapshot) return;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(shapeSnapshot, 0, 0);
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function drawShape(point) {
+    if (!startPoint) return;
+
+    const x1 = startPoint.x;
+    const y1 = startPoint.y;
+    const x2 = point.x;
+    const y2 = point.y;
+
+    ctx.beginPath();
+    ctx.strokeStyle = colorInput.value;
+    ctx.lineWidth = Number(sizeInput.value);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    if (tool === "line") {
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+    }
+
+    if (tool === "rectangle") {
+        ctx.rect(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    if (tool === "circle") {
+        ctx.ellipse(
+            (x1 + x2) / 2,
+            (y1 + y2) / 2,
+            Math.abs(x2 - x1) / 2,
+            Math.abs(y2 - y1) / 2,
+            0, 0, Math.PI * 2
+        );
+    }
+
+    if (tool === "arrow") {
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const headLength = Math.max(12, Number(sizeInput.value) * 3);
+
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+
+        ctx.moveTo(
+            x2 - headLength * Math.cos(angle - Math.PI / 6),
+            y2 - headLength * Math.sin(angle - Math.PI / 6)
+        );
+        ctx.lineTo(x2, y2);
+
+        ctx.lineTo(
+            x2 - headLength * Math.cos(angle + Math.PI / 6),
+            y2 - headLength * Math.sin(angle + Math.PI / 6)
+        );
+    }
+
+    ctx.stroke();
+}
+
 function startDrawing(event) {
     if (event.button !== undefined && event.button !== 0) return;
 
     drawing = true;
     lastPoint = getPoint(event);
+    startPoint = lastPoint;
+
+    if (shapeTools.includes(tool)) {
+        shapeSnapshot = document.createElement("canvas");
+        shapeSnapshot.width = canvas.width;
+        shapeSnapshot.height = canvas.height;
+        shapeSnapshot.getContext("2d").drawImage(canvas, 0, 0);
+        return;
+    }
+
     canvas.setPointerCapture(event.pointerId);
 
     ctx.beginPath();
@@ -120,6 +203,12 @@ function draw(event) {
 
     const point = getPoint(event);
 
+    if (shapeTools.includes(tool)) {
+        restoreShapeSnapshot();
+        drawShape(point);
+        return;
+    }
+
     ctx.beginPath();
     ctx.moveTo(lastPoint.x, lastPoint.y);
     ctx.lineTo(point.x, point.y);
@@ -132,24 +221,48 @@ function draw(event) {
     lastPoint = point;
 }
 
-function stopDrawing() {
+function stopDrawing(event) {
     if (!drawing) return;
+
+    if (shapeTools.includes(tool) && shapeSnapshot) {
+        restoreShapeSnapshot();
+
+        if (event && event.type === "pointerup") {
+            drawShape(getPoint(event));
+        }
+    }
 
     drawing = false;
     lastPoint = null;
+    startPoint = null;
+    shapeSnapshot = null;
     ctx.beginPath();
-    console.log("Stroke finished. History before save:", history.length);
     saveHistory();
 }
 
 function selectTool(selectedTool) {
     tool = selectedTool;
-    brushButton.classList.toggle("active", tool === "brush");
-    eraserButton.classList.toggle("active", tool === "eraser");
+
+    const buttons = {
+        brush: brushButton,
+        eraser: eraserButton,
+        line: lineButton,
+        rectangle: rectangleButton,
+        circle: circleButton,
+        arrow: arrowButton
+    };
+
+    Object.entries(buttons).forEach(([name, button]) => {
+        button.classList.toggle("active", name === tool);
+    });
 }
 
 brushButton.addEventListener("click", () => selectTool("brush"));
 eraserButton.addEventListener("click", () => selectTool("eraser"));
+lineButton.addEventListener("click", () => selectTool("line"));
+rectangleButton.addEventListener("click", () => selectTool("rectangle"));
+circleButton.addEventListener("click", () => selectTool("circle"));
+arrowButton.addEventListener("click", () => selectTool("arrow"));
 
 canvas.addEventListener("pointerdown", startDrawing);
 canvas.addEventListener("pointermove", draw);
