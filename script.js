@@ -304,3 +304,22 @@ exportButton.addEventListener("click", () => {
 selectTool("brush");
 resizeCanvas();
 resetHistory();
+
+document.addEventListener("keydown", (event) => {
+    if (!(event.ctrlKey || event.metaKey)) return;
+
+    if (event.key.toLowerCase() === "z") {
+        event.preventDefault();
+
+        if (event.shiftKey) {
+            restoreHistory(historyIndex + 1);
+        } else {
+            restoreHistory(historyIndex - 1);
+        }
+    }
+
+    if (event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        restoreHistory(historyIndex + 1);
+    }
+});
