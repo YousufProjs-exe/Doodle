@@ -192,7 +192,8 @@ input[type="range"] {
 #line,
 #rectangle,
 #circle,
-#arrow {
+#arrow,
+text {
     min-height: 44px;
     padding: 11px 14px;
     text-align: left;
@@ -203,7 +204,8 @@ input[type="range"] {
 #line.active,
 #rectangle.active,
 #circle.active,
-#arrow.active {
+#arrow.active,
+text.active {
     color: #b94730;
     background: #fff0e9;
     border-color: #ff9e86;

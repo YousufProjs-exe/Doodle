@@ -139,13 +139,14 @@ function drawShape(point) {
 function placeTextInput(event) {
     const point = getPoint(event);
     const input = document.createElement("input");
+    const canvasRect = canvas.getBoundingClientRect();
 
     input.type = "text";
     input.placeholder = "Type here...";
     input.className = "text-entry";
-    input.style.position = "absolute";
-    input.style.left = `${canvas.offsetLeft + point.x}px`;
-    input.style.top = `${canvas.offsetTop + point.y}px`;
+    input.style.position = "fixed";
+    input.style.left = `${canvasRect.left + point.x}px`;
+    input.style.top = `${canvasRect.top + point.y}px`;
     input.style.zIndex = "1000";
     input.style.minWidth = "160px";
     input.style.background = "#ffffff";
@@ -182,7 +183,15 @@ function placeTextInput(event) {
         if (event.key === "Escape") finish(false);
     });
 
-    input.addEventListener("blur", () => finish(true));
+    // input.addEventListener("blur", () => {
+    //     setTimeout(() => {
+    //         if (document.activeElement !== input) finish(true);
+    //     }, 150);
+    // });
+
+    input.addEventListener("blur", () => {
+        console.log("Text input blurred");
+    });
 }
 
 function startDrawing(event) {
