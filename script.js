@@ -308,18 +308,19 @@ resetHistory();
 document.addEventListener("keydown", (event) => {
     if (!(event.ctrlKey || event.metaKey)) return;
 
-    if (event.key.toLowerCase() === "z") {
+    const key = event.key.toLowerCase();
+
+    if (key === "z") {
         event.preventDefault();
-
-        if (event.shiftKey) {
-            restoreHistory(historyIndex + 1);
-        } else {
-            restoreHistory(historyIndex - 1);
-        }
-    }
-
-    if (event.key.toLowerCase() === "y") {
+        restoreHistory(historyIndex + (event.shiftKey ? 1 : -1));
+    } else if (key === "y") {
         event.preventDefault();
         restoreHistory(historyIndex + 1);
+    } else if (key === "l") {
+        event.preventDefault();
+        clearButton.click();
+    } else if (key === "p") {
+        event.preventDefault();
+        exportButton.click();
     }
 });
