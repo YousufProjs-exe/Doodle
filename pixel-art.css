@@ -389,3 +389,25 @@ a:focus-visible {
         transition: none !important;
     }
 }
+
+.history-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+#redo-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+#pixel-canvas.transparent-preview {
+    background-color: #fff;
+    background-image:
+        linear-gradient(45deg, #e7e1db 25%, transparent 25%),
+        linear-gradient(-45deg, #e7e1db 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e7e1db 75%),
+        linear-gradient(-45deg, transparent 75%, #e7e1db 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
