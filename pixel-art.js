@@ -73,6 +73,57 @@ function getPixel(event) {
     return { x, y };
 }
 
+function paintPixel(x, y) {
+    const nextColor = selectedTool === "eraser" ? null : selectedColor;
+
+    if (pixels[y][x] === nextColor) return false;
+
+    pixels[y][x] = nextColor;
+    return true;
+}
+
+canvas.addEventListener("pointerdown", event => {
+    const point = getPixel(event);
+    if (!point) return;
+
+    event.preventDefault();
+
+    drawing = true;
+    lastPixel = point;
+    canvas.setPointerCapture(event.pointerId);
+
+    paintPixel(point.x, point.y);
+    render();
+});
+
+canvas.addEventListener("pointermove", event => {
+    const point = getPixel(event);
+
+    cursorStatus.textContent = point
+        ? `X: ${point.x + 1}, Y: ${point.y + 1}`
+        : "Ready";
+
+    if (!drawing || !point || !lastPixel) return;
+    if (point.x === lastPixel.x && point.y === lastPixel.y) return;
+
+    paintPixel(point.x, point.y);
+    lastPixel = point;
+    render();
+});
+
+function stopDrawing() {
+    drawing = false;
+    lastPixel = null;
+}
+
+canvas.addEventListener("pointerup", stopDrawing);
+canvas.addEventListener("pointercancel", stopDrawing);
+canvas.addEventListener("lostpointercapture", stopDrawing);
+
+colorPicker.addEventListener("input", () => {
+    selectedColor = colorPicker.value;
+});
+
 gridToggle.addEventListener("change", render);
 transparentToggle.addEventListener("change", render);
 
