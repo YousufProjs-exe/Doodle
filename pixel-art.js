@@ -82,6 +82,39 @@ function paintPixel(x, y) {
     return true;
 }
 
+function drawLine(from, to) {
+    let x0 = from.x;
+    let y0 = from.y;
+    const x1 = to.x;
+    const y1 = to.y;
+    const dx = Math.abs(x1 - x0);
+    const dy = Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1;
+    const sy = y0 < y1 ? 1 : -1;
+    let error = dx - dy;
+    let changed = false;
+
+    while (true) {
+        if (paintPixel(x0, y0)) changed = true;
+
+        if (x0 === x1 && y0 === y1) break;
+
+        const twiceError = 2 * error;
+
+        if (twiceError > -dy) {
+            error -= dy;
+            x0 += sx;
+        }
+
+        if (twiceError < dx) {
+            error += dx;
+            y0 += sy;
+        }
+    }
+
+    return changed;
+}
+
 canvas.addEventListener("pointerdown", event => {
     const point = getPixel(event);
     if (!point) return;
@@ -106,7 +139,7 @@ canvas.addEventListener("pointermove", event => {
     if (!drawing || !point || !lastPixel) return;
     if (point.x === lastPixel.x && point.y === lastPixel.y) return;
 
-    paintPixel(point.x, point.y);
+    drawLine(lastPixel, point);
     lastPixel = point;
     render();
 });
