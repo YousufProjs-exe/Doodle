@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0b0f">
+    <title>Pixel Art | Doodle</title>
+    <link rel="stylesheet" href="pixel-art.css">
+    <script src="pixel-art.js" defer></script>
+</head>
+<body>
+    <header class="topbar">
+        <a href="index.html" class="back-link">← Doodle</a>
+        <div class="brand">DOODLE <span>/ PIXEL ART</span></div>
+        <button id="export-btn" type="button">Export PNG</button>
+    </header>
+
+    <main class="editor">
+        <aside class="sidebar">
+            <section class="panel">
+                <h2>Canvas</h2>
+                <label for="resolution">Resolution</label>
+                <select id="resolution">
+                    <option value="16">16 × 16</option>
+                    <option value="24">24 × 24</option>
+                    <option value="32" selected>32 × 32</option>
+                    <option value="48">48 × 48</option>
+                    <option value="64">64 × 64</option>
+                </select>
+                <button id="clear-btn" type="button">Clear Canvas</button>
+            </section>
+
+            <section class="panel">
+                <h2>Tools</h2>
+                <div class="tools">
+                    <button class="tool active" data-tool="pencil" type="button">✎ Pencil</button>
+                    <button class="tool" data-tool="eraser" type="button">▱ Eraser</button>
+                    <button class="tool" data-tool="fill" type="button">▨ Fill</button>
+                    <button class="tool" data-tool="eyedropper" type="button">⌕ Picker</button>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>Color</h2>
+                <label for="color-picker">Selected color</label>
+                <input id="color-picker" type="color" value="#202030">
+                <div id="palette" class="palette">
+                    <button type="button" data-color="#202030" style="--swatch:#202030" aria-label="Dark"></button>
+                    <button type="button" data-color="#ffffff" style="--swatch:#ffffff" aria-label="White"></button>
+                    <button type="button" data-color="#ef476f" style="--swatch:#ef476f" aria-label="Pink"></button>
+                    <button type="button" data-color="#ffd166" style="--swatch:#ffd166" aria-label="Yellow"></button>
+                    <button type="button" data-color="#06d6a0" style="--swatch:#06d6a0" aria-label="Green"></button>
+                    <button type="button" data-color="#118ab2" style="--swatch:#118ab2" aria-label="Blue"></button>
+                    <button type="button" data-color="#8b5cf6" style="--swatch:#8b5cf6" aria-label="Purple"></button>
+                    <button type="button" data-color="#f97316" style="--swatch:#f97316" aria-label="Orange"></button>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>Options</h2>
+                <label class="option">
+                    <input id="grid-toggle" type="checkbox" checked>
+                    Show pixel grid
+                </label>
+                <label class="option">
+                    <input id="transparent-toggle" type="checkbox">
+                    Transparent background
+                </label>
+                <button id="undo-btn" type="button" disabled>Undo</button>
+            </section>
+        </aside>
+
+        <section class="workspace">
+            <div class="workspace-heading">
+                <div>
+                    <h1>Pixel Studio</h1>
+                    <p>Create pixel art, one pixel at a time.</p>
+                </div>
+                <span id="canvas-info">32 × 32</span>
+            </div>
+
+            <div class="canvas-area">
+                <canvas id="pixel-canvas" width="512" height="512"
+                    aria-label="Pixel art drawing canvas"></canvas>
+            </div>
+
+            <footer class="statusbar">
+                <span id="tool-status">Pencil selected</span>
+                <span id="cursor-status">Ready</span>
+            </footer>
+        </section>
+    </main>
+</body>
+</html>
