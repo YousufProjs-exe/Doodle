@@ -1,17 +1,27 @@
-
 const canvas = document.getElementById("pixel-canvas");
 const ctx = canvas.getContext("2d");
 const resolutionSelect = document.getElementById("resolution");
+const colorPicker = document.getElementById("color-picker");
 const gridToggle = document.getElementById("grid-toggle");
 const transparentToggle = document.getElementById("transparent-toggle");
 const canvasInfo = document.getElementById("canvas-info");
+const toolStatus = document.getElementById("tool-status");
+const cursorStatus = document.getElementById("cursor-status");
 
 const previewSize = 512;
 let resolution = Number(resolutionSelect.value);
 let pixels = [];
+let selectedColor = colorPicker.value;
+let selectedTool = "pencil";
+let drawing = false;
+let lastPixel = null;
 
 canvas.width = previewSize;
 canvas.height = previewSize;
+
+function createPixels(size) {
+    return Array.from({ length: size }, () => Array(size).fill(null));
+}
 
 function render() {
     const cell = previewSize / resolution;
@@ -39,6 +49,7 @@ function render() {
 
         for (let i = 0; i <= resolution; i++) {
             const position = i * cell + 0.5;
+
             ctx.moveTo(position, 0);
             ctx.lineTo(position, previewSize);
             ctx.moveTo(0, position);
@@ -52,12 +63,18 @@ function render() {
     canvasInfo.textContent = `${resolution} × ${resolution}`;
 }
 
+function getPixel(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor((event.clientX - rect.left) / rect.width * resolution);
+    const y = Math.floor((event.clientY - rect.top) / rect.height * resolution);
+
+    if (x < 0 || y < 0 || x >= resolution || y >= resolution) return null;
+
+    return { x, y };
+}
+
 gridToggle.addEventListener("change", render);
 transparentToggle.addEventListener("change", render);
-
-function createPixels(size) {
-    return Array.from({ length: size }, () => Array(size).fill(null));
-}
 
 pixels = createPixels(resolution);
 render();
