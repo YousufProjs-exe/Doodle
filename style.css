@@ -288,3 +288,29 @@ canvas {
         transition: none !important;
     }
 }
+
+#pixel-art-link {
+    position: relative;
+    overflow: hidden;
+    transition: background 0.15s steps(3), color 0.15s steps(3),
+                transform 0.15s steps(3), box-shadow 0.15s steps(3);
+}
+
+#pixel-art-link:hover {
+    background: #302c2a;
+    color: #f8f6f2;
+    box-shadow: 3px 3px 0 #ff765e;
+    transform: translate(-2px, -2px);
+}
+
+#pixel-art-link:active {
+    background: #ff765e;
+    color: #fff;
+    box-shadow: 1px 1px 0 #302c2a;
+    transform: translate(1px, 1px);
+}
+
+#pixel-art-link:focus-visible {
+    outline: 2px dashed #ff765e;
+    outline-offset: 4px;
+}
