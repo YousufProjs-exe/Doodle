@@ -2,25 +2,92 @@ const canvas = document.getElementById("pixel-canvas");
 const ctx = canvas.getContext("2d");
 const resolutionSelect = document.getElementById("resolution");
 const colorPicker = document.getElementById("color-picker");
+const palette = document.getElementById("palette");
 const gridToggle = document.getElementById("grid-toggle");
 const transparentToggle = document.getElementById("transparent-toggle");
 const canvasInfo = document.getElementById("canvas-info");
 const toolStatus = document.getElementById("tool-status");
 const cursorStatus = document.getElementById("cursor-status");
+const undoButton = document.getElementById("undo-btn");
+const redoButton = document.getElementById("redo-btn");
 
 const previewSize = 512;
+const historyLimit = 50;
 let resolution = Number(resolutionSelect.value);
 let pixels = [];
 let selectedColor = colorPicker.value;
 let selectedTool = "pencil";
 let drawing = false;
 let lastPixel = null;
+let history = [];
+let redoHistory = [];
 
 canvas.width = previewSize;
 canvas.height = previewSize;
 
-function createPixels(size) {
-    return Array.from({ length: size }, () => Array(size).fill(null));
+function clonePixels(source) {
+    return source.map(row => [...row]);
+}
+
+function samePixels(a, b) {
+    return a.length === b.length &&
+        a.every((row, y) =>
+            row.every((color, x) => color === b[y][x])
+        );
+}
+
+function updateHistoryButtons() {
+    undoButton.disabled = history.length === 0;
+    redoButton.disabled = redoHistory.length === 0;
+}
+
+function saveHistory() {
+    history.push(clonePixels(pixels));
+
+    if (history.length > historyLimit) history.shift();
+
+    redoHistory = [];
+    updateHistoryButtons();
+}
+
+function undo() {
+    if (!history.length) return;
+
+    redoHistory.push(clonePixels(pixels));
+    pixels = history.pop();
+    updateHistoryButtons();
+    render();
+}
+
+function redo() {
+    if (!redoHistory.length) return;
+
+    history.push(clonePixels(pixels));
+    if (history.length > historyLimit) history.shift();
+
+    pixels = redoHistory.pop();
+    updateHistoryButtons();
+    render();
+}
+
+function createPixels(size, previous = null) {
+    const next = Array.from({ length: size }, () =>
+        Array(size).fill(null)
+    );
+
+    if (previous) {
+        const oldSize = previous.length;
+
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                next[y][x] = previous[
+                    Math.floor(y * oldSize / size)
+                ][Math.floor(x * oldSize / size)];
+            }
+        }
+    }
+
+    return next;
 }
 
 function render() {
@@ -49,7 +116,6 @@ function render() {
 
         for (let i = 0; i <= resolution; i++) {
             const position = i * cell + 0.5;
-
             ctx.moveTo(position, 0);
             ctx.lineTo(position, previewSize);
             ctx.moveTo(0, position);
@@ -59,7 +125,11 @@ function render() {
         ctx.stroke();
     }
 
-    canvas.classList.toggle("transparent-preview", transparentToggle.checked);
+    canvas.classList.toggle(
+        "transparent-preview",
+        transparentToggle.checked
+    );
+
     canvasInfo.textContent = `${resolution} × ${resolution}`;
 }
 
@@ -73,7 +143,57 @@ function getPixel(event) {
     return { x, y };
 }
 
+function floodFill(startX, startY) {
+    const target = pixels[startY][startX];
+
+    if (target === selectedColor) return false;
+
+    const stack = [[startX, startY]];
+    const visited = new Set();
+    let changed = false;
+
+    while (stack.length) {
+        const [x, y] = stack.pop();
+
+        if (x < 0 || y < 0 || x >= resolution || y >= resolution) continue;
+
+        const key = `${x},${y}`;
+        if (visited.has(key) || pixels[y][x] !== target) continue;
+
+        visited.add(key);
+        pixels[y][x] = selectedColor;
+        changed = true;
+
+        stack.push(
+            [x + 1, y],
+            [x - 1, y],
+            [x, y + 1],
+            [x, y - 1]
+        );
+    }
+
+    return changed;
+}
+
 function paintPixel(x, y) {
+    if (selectedTool === "eyedropper") {
+        const color = pixels[y][x];
+
+        if (color) {
+            selectedColor = color;
+            colorPicker.value = color;
+        } else {
+            selectedTool = "eraser";
+            selectTool("eraser");
+        }
+
+        return false;
+    }
+
+    if (selectedTool === "fill") {
+        return floodFill(x, y);
+    }
+
     const nextColor = selectedTool === "eraser" ? null : selectedColor;
 
     if (pixels[y][x] === nextColor) return false;
@@ -133,23 +253,41 @@ function selectTool(tool) {
     canvas.style.cursor = tool === "eyedropper" ? "copy" : "crosshair";
 }
 
-document.querySelectorAll(".tool").forEach(button => {
-    button.addEventListener("click", () => selectTool(button.dataset.tool));
-});
-
-selectTool("pencil");
-
 canvas.addEventListener("pointerdown", event => {
     const point = getPixel(event);
     if (!point) return;
 
     event.preventDefault();
 
+    if (selectedTool === "fill" || selectedTool === "eyedropper") {
+        const before = clonePixels(pixels);
+        paintPixel(point.x, point.y);
+
+        if (!samePixels(before, pixels)) {
+            history.push(before);
+            if (history.length > historyLimit) history.shift();
+            redoHistory = [];
+            updateHistoryButtons();
+        }
+
+        render();
+        return;
+    }
+
     drawing = true;
     lastPixel = point;
     canvas.setPointerCapture(event.pointerId);
 
+    const before = clonePixels(pixels);
     paintPixel(point.x, point.y);
+
+    if (!samePixels(before, pixels)) {
+        history.push(before);
+        if (history.length > historyLimit) history.shift();
+        redoHistory = [];
+        updateHistoryButtons();
+    }
+
     render();
 });
 
@@ -161,30 +299,11 @@ canvas.addEventListener("pointermove", event => {
         : "Ready";
 
     if (!drawing || !point || !lastPixel) return;
+
     if (point.x === lastPixel.x && point.y === lastPixel.y) return;
 
     drawLine(lastPixel, point);
     lastPixel = point;
-    render();
-});
-
-canvas.addEventListener("pointerdown", event => {
-    const point = getPixel(event);
-    if (!point) return;
-
-    event.preventDefault();
-
-    if (selectedTool === "fill" || selectedTool === "eyedropper") {
-        paintPixel(point.x, point.y);
-        render();
-        return;
-    }
-
-    drawing = true;
-    lastPixel = point;
-    canvas.setPointerCapture(event.pointerId);
-
-    paintPixel(point.x, point.y);
     render();
 });
 
@@ -197,12 +316,74 @@ canvas.addEventListener("pointerup", stopDrawing);
 canvas.addEventListener("pointercancel", stopDrawing);
 canvas.addEventListener("lostpointercapture", stopDrawing);
 
+document.querySelectorAll(".tool").forEach(button => {
+    button.addEventListener("click", () => selectTool(button.dataset.tool));
+});
+
 colorPicker.addEventListener("input", () => {
     selectedColor = colorPicker.value;
+});
+
+palette.addEventListener("click", event => {
+    const button = event.target.closest("[data-color]");
+    if (!button) return;
+
+    selectedColor = button.dataset.color;
+    colorPicker.value = selectedColor;
+});
+
+resolutionSelect.addEventListener("change", () => {
+    const newResolution = Number(resolutionSelect.value);
+    if (newResolution === resolution) return;
+
+    saveHistory();
+    pixels = createPixels(newResolution, pixels);
+    resolution = newResolution;
+    render();
 });
 
 gridToggle.addEventListener("change", render);
 transparentToggle.addEventListener("change", render);
 
+document.getElementById("clear-btn").addEventListener("click", () => {
+    if (!pixels.some(row => row.some(pixel => pixel !== null))) return;
+
+    saveHistory();
+    pixels = createPixels(resolution);
+    render();
+});
+
+undoButton.addEventListener("click", undo);
+redoButton.addEventListener("click", redo);
+
+document.getElementById("export-btn").addEventListener("click", () => {
+    const output = document.createElement("canvas");
+    output.width = resolution;
+    output.height = resolution;
+
+    const outputCtx = output.getContext("2d");
+
+    if (!transparentToggle.checked) {
+        outputCtx.fillStyle = "#ffffff";
+        outputCtx.fillRect(0, 0, resolution, resolution);
+    }
+
+    for (let y = 0; y < resolution; y++) {
+        for (let x = 0; x < resolution; x++) {
+            if (!pixels[y][x]) continue;
+
+            outputCtx.fillStyle = pixels[y][x];
+            outputCtx.fillRect(x, y, 1, 1);
+        }
+    }
+
+    const link = document.createElement("a");
+    link.download = `doodle-pixel-art-${resolution}x${resolution}.png`;
+    link.href = output.toDataURL("image/png");
+    link.click();
+});
+
 pixels = createPixels(resolution);
+updateHistoryButtons();
 render();
+selectTool("pencil");
