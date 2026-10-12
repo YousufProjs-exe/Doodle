@@ -115,6 +115,30 @@ function drawLine(from, to) {
     return changed;
 }
 
+function selectTool(tool) {
+    selectedTool = tool;
+
+    document.querySelectorAll(".tool").forEach(button => {
+        button.classList.toggle("active", button.dataset.tool === tool);
+    });
+
+    const names = {
+        pencil: "Pencil",
+        eraser: "Eraser",
+        fill: "Fill",
+        eyedropper: "Color picker"
+    };
+
+    toolStatus.textContent = `${names[tool]} selected`;
+    canvas.style.cursor = tool === "eyedropper" ? "copy" : "crosshair";
+}
+
+document.querySelectorAll(".tool").forEach(button => {
+    button.addEventListener("click", () => selectTool(button.dataset.tool));
+});
+
+selectTool("pencil");
+
 canvas.addEventListener("pointerdown", event => {
     const point = getPixel(event);
     if (!point) return;
