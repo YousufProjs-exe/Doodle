@@ -168,6 +168,26 @@ canvas.addEventListener("pointermove", event => {
     render();
 });
 
+canvas.addEventListener("pointerdown", event => {
+    const point = getPixel(event);
+    if (!point) return;
+
+    event.preventDefault();
+
+    if (selectedTool === "fill" || selectedTool === "eyedropper") {
+        paintPixel(point.x, point.y);
+        render();
+        return;
+    }
+
+    drawing = true;
+    lastPixel = point;
+    canvas.setPointerCapture(event.pointerId);
+
+    paintPixel(point.x, point.y);
+    render();
+});
+
 function stopDrawing() {
     drawing = false;
     lastPixel = null;
