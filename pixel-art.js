@@ -1,3 +1,4 @@
+
 const canvas = document.getElementById("pixel-canvas");
 const ctx = canvas.getContext("2d");
 const resolutionSelect = document.getElementById("resolution");
