@@ -1,30 +1,8 @@
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const colorInput = document.getElementById("color");
-const sizeInput = document.getElementById("size");
-const brushButton = document.getElementById("brush");
-const eraserButton = document.getElementById("eraser");
-const undoButton = document.getElementById("undo");
-const redoButton = document.getElementById("redo");
-const clearButton = document.getElementById("clear");
-const exportButton = document.getElementById("export");
-const lineButton = document.getElementById("line");
-const rectangleButton = document.getElementById("rectangle");
-const circleButton = document.getElementById("circle");
-const arrowButton = document.getElementById("arrow");
-const textButton = document.getElementById("text");
-
-let history = [];
-let historyIndex = -1;
-let drawing = false;
-let tool = "brush";
-let lastPoint = null;
 let canvasWidth = 1000;
 let canvasHeight = 650;
-let startPoint = null;
-let shapeSnapshot = null;
-const shapeTools = ["line", "rectangle", "circle", "arrow"];
 
 function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
@@ -64,11 +42,16 @@ function resizeCanvas() {
 
 function getPoint(event) {
     const rect = canvas.getBoundingClientRect();
+
     return {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top
     };
 }
+
+let tool = "brush";
+let startPoint = null;
+let shapeSnapshot = null;
 
 function restoreShapeSnapshot() {
     if (!shapeSnapshot) return;
@@ -82,6 +65,9 @@ function restoreShapeSnapshot() {
 }
 
 function drawShape(point) {
+    const colorInput = document.getElementById("color");
+    const sizeInput = document.getElementById("size");
+
     if (!startPoint) return;
 
     const x1 = startPoint.x;
@@ -125,6 +111,7 @@ function drawShape(point) {
             x2 - headLength * Math.cos(angle - Math.PI / 6),
             y2 - headLength * Math.sin(angle - Math.PI / 6)
         );
+
         ctx.lineTo(x2, y2);
 
         ctx.lineTo(
@@ -137,6 +124,8 @@ function drawShape(point) {
 }
 
 function placeTextInput(event) {
+    const colorInput = document.getElementById("color");
+    const sizeInput = document.getElementById("size");
     const point = getPoint(event);
     const input = document.createElement("input");
     const canvasRect = canvas.getBoundingClientRect();
@@ -180,21 +169,21 @@ function placeTextInput(event) {
             event.preventDefault();
             finish(true);
         }
-        if (event.key === "Escape") finish(false);
-    });
 
-    // input.addEventListener("blur", () => {
-    //     setTimeout(() => {
-    //         if (document.activeElement !== input) finish(true);
-    //     }, 150);
-    // });
-
-    input.addEventListener("blur", () => {
-        console.log("Text input blurred");
+        if (event.key === "Escape") {
+            finish(false);
+        }
     });
 }
 
+let drawing = false;
+let lastPoint = null;
+const shapeTools = ["line", "rectangle", "circle", "arrow"];
+
 function startDrawing(event) {
+    const sizeInput = document.getElementById("size");
+    const colorInput = document.getElementById("color");
+
     if (event.button !== undefined && event.button !== 0) return;
 
     if (tool === "text") {
@@ -217,14 +206,32 @@ function startDrawing(event) {
     canvas.setPointerCapture(event.pointerId);
 
     ctx.beginPath();
-    ctx.arc(lastPoint.x, lastPoint.y, Number(sizeInput.value) / 2, 0, Math.PI * 2);
+    ctx.arc(
+        lastPoint.x,
+        lastPoint.y,
+        Number(sizeInput.value) / 2,
+        0,
+        Math.PI * 2
+    );
+
     ctx.fillStyle = tool === "eraser" ? "#ffffff" : colorInput.value;
     ctx.fill();
 }
 
+const undoButton = document.getElementById("undo");
+const redoButton = document.getElementById("redo");
+
+let history = [];
+let historyIndex = -1;
+
 function updateHistoryButtons() {
-    if (undoButton) undoButton.disabled = historyIndex <= 0;
-    if (redoButton) redoButton.disabled = historyIndex >= history.length - 1;
+    if (undoButton) {
+        undoButton.disabled = historyIndex <= 0;
+    }
+
+    if (redoButton) {
+        redoButton.disabled = historyIndex >= history.length - 1;
+    }
 }
 
 function saveHistory() {
@@ -236,7 +243,9 @@ function saveHistory() {
     history = history.slice(0, historyIndex + 1);
     history.push(snapshot);
 
-    if (history.length > 50) history.shift();
+    if (history.length > 50) {
+        history.shift();
+    }
 
     historyIndex = history.length - 1;
     updateHistoryButtons();
@@ -259,10 +268,14 @@ function restoreHistory(index) {
 
     const dpr = window.devicePixelRatio || 1;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
     updateHistoryButtons();
 }
 
 function draw(event) {
+    const colorInput = document.getElementById("color");
+    const sizeInput = document.getElementById("size");
+
     if (!drawing || !lastPoint) return;
 
     const point = getPoint(event);
@@ -300,9 +313,18 @@ function stopDrawing(event) {
     lastPoint = null;
     startPoint = null;
     shapeSnapshot = null;
+
     ctx.beginPath();
     saveHistory();
 }
+
+const brushButton = document.getElementById("brush");
+const eraserButton = document.getElementById("eraser");
+const lineButton = document.getElementById("line");
+const rectangleButton = document.getElementById("rectangle");
+const circleButton = document.getElementById("circle");
+const arrowButton = document.getElementById("arrow");
+const textButton = document.getElementById("text");
 
 function selectTool(selectedTool) {
     tool = selectedTool;
@@ -342,7 +364,6 @@ window.addEventListener("resize", () => {
 });
 
 undoButton?.addEventListener("click", () => {
-    console.log("Undo clicked:", historyIndex, history.length);
     restoreHistory(historyIndex - 1);
 });
 
@@ -350,28 +371,38 @@ redoButton?.addEventListener("click", () => {
     restoreHistory(historyIndex + 1);
 });
 
-clearButton.addEventListener("click", () => {
+const clearButton = document.getElementById("clear");
+
+function clearCanvas() {
     drawing = false;
     lastPoint = null;
+    startPoint = null;
+    shapeSnapshot = null;
 
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     saveHistory();
-});
+}
 
-exportButton.addEventListener("click", () => {
+clearButton.addEventListener("click", clearCanvas);
+
+const exportButton = document.getElementById("export");
+
+function exportCanvas() {
     const link = document.createElement("a");
     link.download = "doodle.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
-});
+}
+
+exportButton.addEventListener("click", exportCanvas);
 
 selectTool("brush");
 resizeCanvas();
 resetHistory();
 
-document.addEventListener("keydown", (event) => {
+function handleKeyboardShortcuts(event) {
     if (!(event.ctrlKey || event.metaKey)) return;
 
     const key = event.key.toLowerCase();
@@ -389,4 +420,6 @@ document.addEventListener("keydown", (event) => {
         event.preventDefault();
         exportButton.click();
     }
-});
+}
+
+document.addEventListener("keydown", handleKeyboardShortcuts);

@@ -1,16 +1,12 @@
 
-const canvas = document.getElementById("pixel-canvas");
 const ctx = canvas.getContext("2d");
 const resolutionSelect = document.getElementById("resolution");
-const colorPicker = document.getElementById("color-picker");
-const palette = document.getElementById("palette");
 const gridToggle = document.getElementById("grid-toggle");
 const transparentToggle = document.getElementById("transparent-toggle");
+
 const canvasInfo = document.getElementById("canvas-info");
 const toolStatus = document.getElementById("tool-status");
 const cursorStatus = document.getElementById("cursor-status");
-const undoButton = document.getElementById("undo-btn");
-const redoButton = document.getElementById("redo-btn");
 
 const previewSize = 512;
 const historyLimit = 50;
@@ -19,13 +15,11 @@ let pixels = [];
 let selectedColor = colorPicker.value;
 let selectedTool = "pencil";
 let drawing = false;
-let lastPixel = null;
-let history = [];
-let redoHistory = [];
 
 canvas.width = previewSize;
 canvas.height = previewSize;
 
+const canvas = document.getElementById("pixel-canvas");
 function clonePixels(source) {
     return source.map(row => [...row]);
 }
@@ -36,6 +30,10 @@ function samePixels(a, b) {
             row.every((color, x) => color === b[y][x])
         );
 }
+
+let lastPixel = null;
+let history = [];
+let redoHistory = [];
 
 function updateHistoryButtons() {
     undoButton.disabled = history.length === 0;
@@ -51,6 +49,7 @@ function saveHistory() {
     updateHistoryButtons();
 }
 
+const undoButton = document.getElementById("undo-btn");
 function undo() {
     if (!history.length) return;
 
@@ -60,6 +59,7 @@ function undo() {
     render();
 }
 
+const redoButton = document.getElementById("redo-btn");
 function redo() {
     if (!redoHistory.length) return;
 
@@ -175,6 +175,9 @@ function floodFill(startX, startY) {
 
     return changed;
 }
+
+const colorPicker = document.getElementById("color-picker");
+const palette = document.getElementById("palette");
 
 function paintPixel(x, y) {
     if (selectedTool === "eyedropper") {

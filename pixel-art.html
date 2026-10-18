@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="pixel-art.css">
     <script src="pixel-art.js" defer></script>
 </head>
+
 <body>
     <header class="topbar">
-        <a href="index.html" class="back-link">← Doodle</a>
-        <div class="brand">doodle. <span> PIXEL ART</span></div>
+        <a href="index.html" class="back-link"><- Doodle</a>
+        <div class="brand">doodle.'s <span> PIXEL ART</span></div>
         <button id="export-btn" type="button">Export PNG</button>
     </header>
 
@@ -22,22 +23,26 @@
                 <h2>Canvas</h2>
                 <label for="resolution">Resolution</label>
                 <select id="resolution">
-                    <option value="16">16 x 16</option>
-                    <option value="24">24 x 24</option>
-                    <option value="32" selected>32 x 32</option>
-                    <option value="48">48 x 48</option>
-                    <option value="64">64 x 64</option>
+
+                    <option value="16"> 16 x 16 </option>
+                    <option value="24"> 24 x 24 </option>
+                    <option value="32" selected> 32 x 32 </option>
+                    <option value="48"> 48 x 48 </option>
+                    <option value="64"> 64 x 64 </option>
+
                 </select>
+
                 <button id="clear-btn" type="button">Clear Canvas</button>
+
             </section>
 
             <section class="panel">
                 <h2>Tools</h2>
                 <div class="tools">
-                    <button class="tool active" data-tool="pencil" type="button">✎ Pencil</button>
-                    <button class="tool" data-tool="eraser" type="button">▱ Eraser</button>
-                    <button class="tool" data-tool="fill" type="button">▨ Fill</button>
-                    <button class="tool" data-tool="eyedropper" type="button">⌕ Picker</button>
+                    <button class="tool active" data-tool="pencil" type="button">Pencil</button>
+                    <button class="tool" data-tool="eraser" type="button">Eraser</button>
+                    <button class="tool" data-tool="fill" type="button">Fill</button>
+                    <button class="tool" data-tool="eyedropper" type="button">Picker</button>
                 </div>
             </section>
 
@@ -45,6 +50,7 @@
                 <h2>Color</h2>
                 <label for="color-picker">Selected color</label>
                 <input id="color-picker" type="color" value="#202030">
+                <p>choose any</p>
                 <div id="palette" class="palette">
                     <button type="button" data-color="#202030" style="--swatch:#202030" aria-label="Dark"></button>
                     <button type="button" data-color="#ffffff" style="--swatch:#ffffff" aria-label="White"></button>
