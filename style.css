@@ -292,8 +292,7 @@ canvas {
 #pixel-art-link {
     position: relative;
     overflow: hidden;
-    transition: background 0.15s steps(3), color 0.15s steps(3),
-                transform 0.15s steps(3), box-shadow 0.15s steps(3);
+    transition: background 0.15s steps(3), color 0.15s steps(3), transform 0.15s steps(3), box-shadow 0.15s steps(3);
 }
 
 #pixel-art-link:hover {

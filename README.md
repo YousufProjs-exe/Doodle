@@ -24,6 +24,13 @@ The main editor supports freehand sketches, adjustable brush sizes, color select
 - **Editing history:** Undo and redo changes.
 - **Image export:** Save your pixel artwork as a PNG.
 
+## Pixel Art 
+- **Use Pencil:** To free had pixel draw.  
+- **Use Eraser:** To erase drawn parts.
+- **Use Fill:** To fill a color enitrerly - border vary.
+- **Use Picker:** To pick a color and use with the tools .
+- **Enable Grid** & **Enable Transparent Background**.
+
 ## Built With
 
 - HTML5
@@ -33,4 +40,4 @@ The main editor supports freehand sketches, adjustable brush sizes, color select
 
 
 **Doodle — Be Creative.**
-- Yousuf 
+- ~ Yousuf 
