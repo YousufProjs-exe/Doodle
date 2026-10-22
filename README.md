@@ -10,9 +10,6 @@ The main editor supports freehand sketches, adjustable brush sizes, color select
 ### Drawing Canvas
 ![Doodle Drawing Canvas](screenshots/canvas.png)
 
-### Pixel Art Studio
-![Doodle Pixel Art](screenshots/pixel-art.png)
-
 ## What You Can Create
 
 - **Freehand drawings:** Sketch using the brush and eraser with adjustable brush sizes.
@@ -23,6 +20,9 @@ The main editor supports freehand sketches, adjustable brush sizes, color select
 - **Canvas controls:** Toggle the pixel grid and transparent background.
 - **Editing history:** Undo and redo changes.
 - **Image export:** Save your pixel artwork as a PNG.
+
+### Pixel Art Studio
+![Doodle Pixel Art](screenshots/pixel-art.png)
 
 ## Pixel Art 
 - **Use Pencil:** To free had pixel draw.  
@@ -38,6 +38,7 @@ The main editor supports freehand sketches, adjustable brush sizes, color select
 - Vanilla JavaScript
 - HTML Canvas API - thing i learned while building doodle !!! 
 
+Used AI assistance - (about 15-20% of build is AI generated) "only" throughout development for feature implementation, and refining the editor's functionality. AI helped with the HTML structure, CSS styling, JavaScript logic, pixel-drawing interpolation, flood-fill implementation, transparent backgrounds functionality.
 
 **Doodle — Be Creative.**
 - ~ Yousuf 
