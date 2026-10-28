@@ -374,14 +374,23 @@ redoButton?.addEventListener("click", () => {
 const clearButton = document.getElementById("clear");
 
 function clearCanvas() {
+    document.querySelectorAll(".text-entry").forEach(input => input.remove());
+
     drawing = false;
     lastPoint = null;
     startPoint = null;
     shapeSnapshot = null;
 
+    ctx.setTransform(
+        window.devicePixelRatio || 1, 0,
+        0, window.devicePixelRatio || 1,
+        0, 0
+    );
+
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
+    ctx.beginPath();
     saveHistory();
 }
 
