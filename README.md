@@ -39,6 +39,7 @@ The main editor supports freehand sketches, adjustable brush sizes, color select
 - HTML Canvas API - thing i learned while building doodle !!! 
 
 Used AI assistance - (about 15-20% of build is AI generated) "only" throughout development for feature implementation, and refining the editor's functionality. AI helped with the HTML structure, CSS styling, JavaScript logic, pixel-drawing interpolation, flood-fill implementation, transparent backgrounds functionality.
+### Rewritten everything where AI helped in the recent commit ! 
 
 **Doodle — Be Creative.**
 - ~ Yousuf 
